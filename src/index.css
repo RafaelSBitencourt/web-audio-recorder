@@ -1,0 +1,53 @@
+/* 1. PALETA BASE  */
+:root {
+  --brand-color-1: #760939; /* Vinho Escuro */
+  --brand-color-2: #b61139; /* Vermelho Vibrante */
+  --brand-color-3: #2093d8; /* Azul */
+  --brand-color-4: #20dad8; /* Ciano Escuro */
+  --brand-color-5: #5fe3e1; /* Ciano Claro */
+}
+
+/* 2. TEMA CLARO (Light Mode - Padrão) */
+:root,
+[data-theme="light"] {
+  /* Fundos (60%) - Usando tons neutros clarinhos para respiro */
+  --bg-primary: #f8fafc; /* Fundo da tela inteira */
+  --bg-surface: #ffffff; /* Fundo da lista de áudios, cards e player */
+
+  /* Textos */
+  --text-primary: #0f172a; /* Títulos (quase preto) */
+  --text-secondary: #475569; /* Datas, tamanhos de arquivo (cinza médio) */
+
+  /* Cores de Interface (30% e 10%) */
+  --ui-accent: var(
+    --brand-color-3
+  ); /* Azul para cabeçalhos e botões secundários */
+  --ui-action: var(
+    --brand-color-2
+  ); /* Vermelho EXCLUSIVO para o botão de Gravar (REC) */
+  --ui-action-hover: var(
+    --brand-color-1
+  ); /* Vinho para efeito de mouse em cima do REC */
+  --ui-border: #e2e8f0; /* Linhas divisórias entre os áudios */
+}
+
+/* 3. TEMA ESCURO (Dark Mode) */
+[data-theme="dark"] {
+  /* Fundos (60%) - Usando um fundo muito escuro para não cansar a vista */
+  --bg-primary: #0b1120; /* Fundo da tela inteira (um azul-marinho quase preto) */
+  --bg-surface: #1e293b; /* Cards levemente mais claros para dar profundidade */
+
+  /* Textos */
+  --text-primary: #f8fafc; /* Textos principais (quase branco) */
+  --text-secondary: #94a3b8; /* Textos de apoio (cinza claro) */
+
+  /* Cores de Interface (30% e 10%) */
+  --ui-accent: var(
+    --brand-color-4
+  ); /* No modo escuro, o Ciano brilha mais e substitui o azul */
+  --ui-action: var(
+    --brand-color-2
+  ); /* O Vermelho REC continua sendo a chamada principal */
+  --ui-action-hover: var(--brand-color-1);
+  --ui-border: #334155; /* Linhas divisórias mais escuras */
+}
