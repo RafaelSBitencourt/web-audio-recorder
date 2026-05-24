@@ -4,19 +4,29 @@ import type { AudioMetadata, AudioMetadataInput, AppUser } from './schemas';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const isMockMode = !supabaseUrl || !supabaseAnonKey || 
+let isMockModeTemp = !supabaseUrl || !supabaseAnonKey || 
   supabaseUrl === 'your_supabase_project_url' || 
   supabaseAnonKey === 'your_supabase_anon_public_key';
 
-// Initialize Supabase Client safely
 let supabase: SupabaseClient | null = null;
-if (!isMockMode) {
+let clientInitError: string | null = null;
+
+if (!isMockModeTemp) {
   try {
+    if (!supabaseUrl.startsWith('http://') && !supabaseUrl.startsWith('https://')) {
+      throw new Error('A URL do Supabase deve iniciar com http:// ou https://');
+    }
     supabase = createClient(supabaseUrl, supabaseAnonKey);
   } catch (error) {
     console.error('Failed to initialize Supabase client:', error);
+    clientInitError = (error as Error).message;
+    isMockModeTemp = true; // Fallback to mock mode
   }
 }
+
+export const isMockMode = isMockModeTemp;
+export const getClientInitError = () => clientInitError;
+
 
 // ==========================================
 // IndexedDB Helper for Mock Mode Audio Files

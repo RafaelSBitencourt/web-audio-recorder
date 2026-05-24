@@ -4,7 +4,7 @@ import {
   Sun, Moon, AudioLines, AlertTriangle, ShieldAlert
 } from 'lucide-react';
 
-import { authService, audioService, isMockMode } from './lib/supabase';
+import { authService, audioService, isMockMode, getClientInitError } from './lib/supabase';
 import type { AudioMetadata, AppUser } from './lib/schemas';
 import { AudioMetadataInputSchema } from './lib/schemas';
 import { useAudioRecorder } from './hooks/useAudioRecorder';
@@ -39,9 +39,23 @@ function App() {
     document.documentElement.setAttribute('data-theme', initialTheme);
   }, []);
 
+  // Load initialization errors if any
+  useEffect(() => {
+    const initError = getClientInitError();
+    if (initError) {
+      setAppError(`Erro ao inicializar o Supabase: ${initError}. O aplicativo foi redirecionado para o modo offline (Mock Mode).`);
+    }
+  }, []);
+
   // Monitor auth state changes
   useEffect(() => {
+    // Safety timer to prevent infinite loading screen in case of unforeseen auth listener delays
+    const safetyTimeout = setTimeout(() => {
+      setAuthLoading(false);
+    }, 1500);
+
     const unsubscribe = authService.onAuthStateChange((currentUser) => {
+      clearTimeout(safetyTimeout);
       setUser(currentUser);
       setAuthLoading(false);
       
@@ -54,7 +68,10 @@ function App() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimeout);
+      unsubscribe();
+    };
   }, []);
 
   // Fetch audios for the logged-in user
