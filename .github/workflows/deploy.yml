@@ -1,0 +1,56 @@
+name: Deploy Web Audio Recorder
+
+on:
+  push:
+    branches:
+      - main # Executa o pipeline sempre que houver push na branch main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Executar Testes Automatizados (Vitest)
+        run: npm run test:run
+
+      - name: Compilar Projeto (Build)
+        run: npm run build
+        env:
+          # Insira credenciais Supabase se quiser testar em produção, senão a action compilará no Mock Mode local
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Configurar Páginas do GitHub
+        uses: actions/configure-pages@v4
+
+      - name: Fazer Upload do Artefato
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+
+      - name: Deploy para GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
