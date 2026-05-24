@@ -145,7 +145,7 @@ class SupabaseAuthService implements IAuthService {
   }
 }
 
-class MockAuthService implements IAuthService {
+export class MockAuthService implements IAuthService {
   private listeners: Set<(user: AppUser | null) => void> = new Set();
   private currentUser: AppUser | null = null;
 
@@ -325,7 +325,7 @@ class SupabaseAudioService implements IAudioService {
   }
 }
 
-class MockAudioService implements IAudioService {
+export class MockAudioService implements IAudioService {
   async uploadAudio(blob: Blob, filename: string, userId: string) {
     try {
       const cleanFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
