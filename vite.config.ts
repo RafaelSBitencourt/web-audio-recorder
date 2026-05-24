@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   base:
     process.env.NODE_ENV === "production"
-      ? "https://github.com/RafaelSBitencourt/web-audio-recorder"
+      ? "/web-audio-recorder/"
       : "/",
   optimizeDeps: {
     exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
