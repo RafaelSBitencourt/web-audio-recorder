@@ -3,7 +3,7 @@ name: Deploy Web Audio Recorder
 on:
   push:
     branches:
-      - main # Executa o pipeline sempre que houver push na branch main
+      - main
 
 permissions:
   contents: read
@@ -15,10 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # 1. JOB DE INTEGRAÇÃO CONTÍNUA (CI) - Executa os testes
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Código
@@ -36,10 +34,29 @@ jobs:
       - name: Executar Testes Automatizados (Vitest)
         run: npm run test:run
 
+  # 2. JOB DE ENTREGA CONTÍNUA (CD) - Realiza o Deploy (Apenas se o Job 'test' passar)
+  deploy:
+    needs: test # ISSO AQUI GARANTE QUE O DEPLOY SÓ RODA SE O JOB 'TEST' PASSAR
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Instalar Dependências
+        run: npm ci
+
       - name: Compilar Projeto (Build)
         run: npm run build
         env:
-          # Insira credenciais Supabase se quiser testar em produção, senão a action compilará no Mock Mode local
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
